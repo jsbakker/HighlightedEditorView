@@ -5,7 +5,56 @@
 [![Swift](https://github.com/jsbakker/HighlightedEditorView/actions/workflows/swift.yml/badge.svg)](https://github.com/jsbakker/HighlightedEditorView/actions/workflows/swift.yml)
 
 # HighlightedEditorView
-HighlightedEditorView is a SwiftUI text editing view with real-time syntax highlighting, with support for 48 programming languages.
+HighlightedEditorView is a SwiftUI text editing view with real-time syntax highlighting. The syntax highlighting supports 48 computer languages:
+
+- Ada
+- Assembly
+- Asp
+- Basic
+- C#
+- C
+- C++
+- Cascading StyleSheet
+- DOS Batch
+- EMF
+- Euphoria
+- F#
+- Fortran
+- Gherkin
+- GLSL
+- Go
+- Haskell
+- HLSL
+- HTML
+- Java
+- JavaScript
+- Kotlin
+- Modula
+- Nasa CLIPS
+- NVidia Cg
+- Objective-C
+- Objective-C++
+- OCaml
+- Pascal
+- Perl
+- PHP
+- Power Builder
+- Python
+- R
+- RenderMan
+- Ruby
+- Rust
+- Scala
+- SQL
+- Swift
+- Tcl
+- TypeScript
+- Unix shell
+- UnrealScript
+- Vala
+- VHDL
+- XML
+- Zig
 
 This project utilizes native code for highlighting. The speed of the syntax highlighting update on edit was measured around 50ms, while other highlighters that use JavaScript parsers might be a bit slower.
 
