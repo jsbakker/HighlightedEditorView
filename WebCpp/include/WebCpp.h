@@ -1,6 +1,4 @@
 /* WebCpp.h
- * Umbrella header for the WebCpp SPM target.
- * Exposes the C-linkage bridge for Swift interop.
+ * Public header for the WebCpp framework.
+ * The Swift/Objective-C interface is declared in WebCppBridge.h.
  */
-
-#include "../interop/WebCppBridge.h"

@@ -1,0 +1,4 @@
+framework module WebCpp {
+    header "WebCppBridge.h"
+    export *
+}

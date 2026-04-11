@@ -7,7 +7,7 @@
 HighlightedEditorView is a SwiftUI text editing view with real-time syntax highlighting, with support for 48 programming languages.
 
 
-## Add HighlightedEditorView
+## Add HighlightedEditorView (WIP)
 You can add HighlightedEditorView as package to your Swift project. Open your project in Xcode, and from the menu bar, choose File, "Add Package Dependencies...". 
 
 Enter:

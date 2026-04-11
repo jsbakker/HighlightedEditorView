@@ -21,6 +21,7 @@ let package = Package(
             cxxSettings: [
                 .headerSearchPath("."),
                 .headerSearchPath("colour"),
+                .headerSearchPath("include"),
                 .headerSearchPath("interop"),
                 .headerSearchPath("languages"),
                 .headerSearchPath("parsing"),

@@ -15,7 +15,7 @@
 import SwiftUI
 import AppKit
 
-struct HighlightedEditorView: NSViewRepresentable {
+struct HighlightedEditor: NSViewRepresentable {
 
     @Environment(\.colorScheme) var systemColorScheme
 
@@ -138,7 +138,7 @@ struct HighlightedEditorView: NSViewRepresentable {
             // don't bleed into this one.
             textView.undoManager?.removeAllActions()
             textView.typingAttributes = [
-                .font:            HighlightedEditorView.monoFont,
+                .font:            HighlightedEditor.monoFont,
                 .foregroundColor: WebCppTheme.color(for: "nortext")
             ]
 
@@ -160,9 +160,9 @@ struct HighlightedEditorView: NSViewRepresentable {
             if result.plainText != text {
                 result = rebaseTokenRanges(result, to: text)
             }
-            let monoFont = HighlightedEditorView.monoFont
-            let monoBold = HighlightedEditorView.monoBold
-            let monoItalic = HighlightedEditorView.monoItalic
+            let monoFont = HighlightedEditor.monoFont
+            let monoBold = HighlightedEditor.monoBold
+            let monoItalic = HighlightedEditor.monoItalic
             let nortextColor = WebCppTheme.color(for: "nortext")
             let fullRange = NSRange(location: 0, length: storage.length)
 
