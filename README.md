@@ -113,7 +113,7 @@ struct ContentView: View {
 Note, how we can edit the contents at runtime, and the editor's new value will be updated by the binding's setter.
 
 ## Choose Supported Language
-You may also displa a language picker with all of the supported languages.
+You may also display a language picker with all of the supported languages, and bind it to a state variable.
 
 ```swift
 @State private var language: WebCppLanguage = .swift
