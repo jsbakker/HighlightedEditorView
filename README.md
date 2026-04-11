@@ -2,6 +2,7 @@
 ![Swift6](https://img.shields.io/badge/swift-6-blue.svg)
 ![macOS](https://img.shields.io/badge/os-macOS-green.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+[![Swift](https://github.com/jsbakker/HighlightedEditorView/actions/workflows/swift.yml/badge.svg)](https://github.com/jsbakker/HighlightedEditorView/actions/workflows/swift.yml)
 
 # HighlightedEditorView
 HighlightedEditorView is a SwiftUI text editing view with real-time syntax highlighting, with support for 48 programming languages.
