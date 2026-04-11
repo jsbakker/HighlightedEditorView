@@ -6,6 +6,7 @@
 //  C supports \ at end of a string literal to continue it on the next line.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

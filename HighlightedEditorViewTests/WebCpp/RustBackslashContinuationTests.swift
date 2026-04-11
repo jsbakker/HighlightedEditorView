@@ -9,6 +9,7 @@
 //  so only double-quoted continuation is tested.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

@@ -9,6 +9,7 @@
 //  so backtick continuation is not tested here.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

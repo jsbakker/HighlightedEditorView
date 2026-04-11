@@ -9,6 +9,7 @@
 //  Single-quoted syntax in OCaml is character literals, not full strings.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

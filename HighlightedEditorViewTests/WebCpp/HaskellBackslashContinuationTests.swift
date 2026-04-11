@@ -10,6 +10,7 @@
 //  operator notation — neither supports string continuation.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

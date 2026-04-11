@@ -10,6 +10,7 @@
 //  so continuation is not tested for single quotes.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

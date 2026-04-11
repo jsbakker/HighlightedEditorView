@@ -8,6 +8,7 @@
 //  makes backslash-continuation valid inside db "..." and db '...' directives.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

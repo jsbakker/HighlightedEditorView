@@ -8,6 +8,7 @@
 //  Template literals (backtick strings) do NOT use this mechanism.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

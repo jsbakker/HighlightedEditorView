@@ -8,6 +8,7 @@
 //  are discarded from the string value.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

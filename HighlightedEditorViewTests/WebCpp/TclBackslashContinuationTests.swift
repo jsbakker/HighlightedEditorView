@@ -9,6 +9,7 @@
 //  multi-line continuation valid Tcl syntax.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

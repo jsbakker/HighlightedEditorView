@@ -10,6 +10,7 @@
 //  double-quoted strings, so backtick continuation is also valid.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

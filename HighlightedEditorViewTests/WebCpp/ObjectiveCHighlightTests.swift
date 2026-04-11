@@ -3,6 +3,7 @@
 //  WebCppTests
 //
 
+import Foundation
 import Testing
 import WebCpp
 

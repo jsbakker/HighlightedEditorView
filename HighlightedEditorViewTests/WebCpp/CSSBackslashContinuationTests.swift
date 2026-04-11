@@ -9,6 +9,7 @@
 //  CSS strings.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

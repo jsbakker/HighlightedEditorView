@@ -9,6 +9,7 @@
 //  line is also ignored.  Single-quoted syntax in F# is character literals.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

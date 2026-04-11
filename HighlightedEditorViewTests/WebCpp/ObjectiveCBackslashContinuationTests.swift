@@ -7,6 +7,7 @@
 //  it with the next before any string parsing, covering "..." and @"..." literals.
 //
 
+import Foundation
 import Testing
 import WebCpp
 

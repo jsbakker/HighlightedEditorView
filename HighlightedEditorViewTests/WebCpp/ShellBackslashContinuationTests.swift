@@ -11,6 +11,7 @@
 //  double-quoted strings inside bash.
 //
 
+import Foundation
 import Testing
 import WebCpp
 
