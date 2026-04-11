@@ -9,7 +9,7 @@ import Foundation
 
 /// Languages supported by the WebCpp syntax-highlighting engine.
 /// Each case carries a representative file extension used by the driver.
-enum WebCppLanguage: String, CaseIterable, Identifiable {
+public enum WebCppLanguage: String, CaseIterable, Identifiable {
     case ada          = "adb"
     case assembly     = "asm"
     case asp          = "asp"
@@ -60,10 +60,10 @@ enum WebCppLanguage: String, CaseIterable, Identifiable {
     case zig          = "zig"
     case text         = "txt"
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
     /// Human-readable display name for the picker.
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .ada:           return "Ada"
         case .assembly:      return "Assembly"
@@ -118,12 +118,12 @@ enum WebCppLanguage: String, CaseIterable, Identifiable {
     }
 
     /// The dummy filename passed to WebCppDriver so it selects the right language engine.
-    var dummyFilename: String {
+    public var dummyFilename: String {
         "snippet.\(rawValue)"
     }
 
     /// Finds the language matching a raw extension string, falling back to `.swift`.
-    static func from(rawValue: String) -> WebCppLanguage {
+    public static func from(rawValue: String) -> WebCppLanguage {
         WebCppLanguage(rawValue: rawValue) ?? .swift
     }
 }

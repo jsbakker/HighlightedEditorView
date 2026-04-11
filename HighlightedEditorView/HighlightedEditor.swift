@@ -15,16 +15,21 @@
 import SwiftUI
 import AppKit
 
-struct HighlightedEditor: NSViewRepresentable {
+public struct HighlightedEditor: NSViewRepresentable {
 
     @Environment(\.colorScheme) var systemColorScheme
 
-    @Binding var text: String
-    var language: WebCppLanguage
+    @Binding public var text: String
+    public var language: WebCppLanguage
+
+    public init(text: Binding<String>, language: WebCppLanguage) {
+        self._text = text
+        self.language = language
+    }
 
     // MARK: - NSViewRepresentable
 
-    func makeNSView(context: Context) -> NSScrollView {
+    public func makeNSView(context: Context) -> NSScrollView {
         let scrollView = NSTextView.scrollableTextView()
         guard let textView = scrollView.documentView as? NSTextView else {
             return scrollView
@@ -37,7 +42,7 @@ struct HighlightedEditor: NSViewRepresentable {
         return scrollView
     }
 
-    func updateNSView(_ scrollView: NSScrollView, context: Context) {
+    public func updateNSView(_ scrollView: NSScrollView, context: Context) {
         guard let textView = scrollView.documentView as? NSTextView else { return }
         let coord = context.coordinator
 
@@ -60,11 +65,11 @@ struct HighlightedEditor: NSViewRepresentable {
         }
     }
 
-    func makeCoordinator() -> Coordinator {
+    public func makeCoordinator() -> Coordinator {
         Coordinator(binding: $text)
     }
 
-    static func dismantleNSView(_ scrollView: NSScrollView, coordinator: Coordinator) {
+    public static func dismantleNSView(_ scrollView: NSScrollView, coordinator: Coordinator) {
         guard let textView = scrollView.documentView as? NSTextView else { return }
         textView.undoManager?.removeAllActions()
     }
@@ -113,7 +118,7 @@ struct HighlightedEditor: NSViewRepresentable {
 
     // MARK: - Coordinator
 
-    final class Coordinator: NSObject, NSTextViewDelegate {
+    public final class Coordinator: NSObject, NSTextViewDelegate {
 
         var binding: Binding<String>
         var currentLanguage: WebCppLanguage = .swift
@@ -215,7 +220,7 @@ struct HighlightedEditor: NSViewRepresentable {
 
         // MARK: NSTextViewDelegate
 
-        func textDidChange(_ notification: Notification) {
+        public func textDidChange(_ notification: Notification) {
             guard let textView = notification.object as? NSTextView else { return }
             let newText = textView.string
 
