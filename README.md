@@ -6,6 +6,8 @@
 # HighlightedEditorView
 HighlightedEditorView is a SwiftUI text editing view with real-time syntax highlighting, with support for 48 programming languages.
 
+This project utilizes native code for highlighting. The speed of the syntax highlighting update on edit was measured around 50ms, while other highlighters that use JavaScript parsers might be a bit slower.
+
 
 ## Add HighlightedEditorView Package
 You can add HighlightedEditorView as package to your Swift project. Open your project in Xcode, and from the menu bar, choose File, "Add Package Dependencies...". 
@@ -58,6 +60,7 @@ struct ContentView: View {
 ```
 ![Test Application](HighlightedEditorView/HighlightedEditorView.docc/Resources/TestApp.png)
 
+Note, how we can edit the contents at runtime, and the editor's new value will be updated by the binding's setter.
 
 ## Choose Supported Language
 You may also displa a language picker with all of the supported languages.
