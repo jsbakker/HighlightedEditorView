@@ -117,7 +117,7 @@ public enum WebCppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    /// The dummy filename passed to WebCppDriver so it selects the right language engine.
+    /// The dummy filename passed to WebCppDriver so it selects the right language rules for the engine.
     public var dummyFilename: String {
         "snippet.\(rawValue)"
     }

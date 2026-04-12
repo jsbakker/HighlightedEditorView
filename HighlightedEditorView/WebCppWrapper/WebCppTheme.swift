@@ -9,6 +9,9 @@
 
 import AppKit
 
+/// Maps WebCpp CSS token class names to `NSColor` values.
+/// Each color is adaptive: it resolves to a light or dark variant
+/// automatically based on the current `NSAppearance`.
 enum WebCppTheme {
 
     // MARK: - Background
@@ -52,6 +55,7 @@ enum WebCppTheme {
 
 // MARK: - NSColor adaptive + hex factory
 
+/// Private extension for creating adaptive `NSColor` and `NSColor` from hex strings.
 private extension NSColor {
     /// Creates an adaptive `NSColor` that resolves to `light` in light mode
     /// and `dark` in dark mode, using the current `NSAppearance`.

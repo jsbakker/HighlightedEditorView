@@ -15,6 +15,64 @@
 import SwiftUI
 import AppKit
 
+/// A SwiftUI wrapper around an AppKit-powered, syntax-highlighted text editor.
+///
+/// HighlightedEditor embeds an NSTextView inside an NSScrollView and applies live
+/// syntax highlighting using WebCpp on every edit. It preserves the user's cursor
+/// position and the undo stack by updating only text attributes (foreground color
+/// and font) rather than replacing the underlying text content.
+///
+/// Usage:
+/// - Bind the editor to a String source of truth via `text`.
+/// - Specify the language with `language` to drive WebCpp tokenization and styling.
+/// - The editor automatically re-highlights when text changes, when the selected
+///   language changes, and when the system color scheme switches between light
+///   and dark modes.
+///
+/// Behavior and implementation details:
+/// - Uses a monospaced system font (regular, bold, italic variants) for code.
+/// - Disables smart substitutions (quotes, dashes, spelling, replacements) to
+///   avoid unintended code mutations.
+/// - Respects the SwiftUI environment color scheme to update background and caret
+///   colors in sync with the current theme.
+/// - Debounces highlighting after edits (≈50 ms) to keep typing responsive while
+///   maintaining fresh syntax colors.
+/// - On external content changes (e.g., swapping between snippets), replaces the
+///   text, clears the undo stack to avoid cross-snippet actions, and re-applies
+///   highlighting.
+/// - Re-aligns token ranges if WebCpp’s HTML introduces minor textual differences
+///   (such as trailing spaces on preprocessor lines) to ensure colors land on the
+///   correct characters in the actual source.
+///
+/// Requirements:
+/// - WebCppDriver: performs syntax highlighting and produces HTML.
+/// - WebCppTheme: maps token classes to NSColor and font traits.
+/// - WebCppLanguage: identifies the language and provides an appropriate filename
+///   hint for WebCpp.
+///
+/// Platform:
+/// - macOS (AppKit). Designed for use in SwiftUI via NSViewRepresentable.
+///
+/// Threading:
+/// - Highlighting and attribute application occur on the main thread, coordinated
+///   with NSTextView updates and layout invalidation.
+///
+/// Scrolling and layout:
+/// - Captures and restores scroll position across attribute updates to avoid
+///   jumpiness while re-highlighting.
+/// - Forces layout after attribute changes to ensure geometry is up to date
+///   before restoring the scroll origin.
+///
+/// Limitations:
+/// - Very large documents may incur noticeable re-highlighting cost since the
+///   full text is re-tokenized; the short debounce mitigates this during typing.
+/// - Rich text is controlled by the component; external attribute mutations may
+///   be overwritten on the next highlight pass.
+///
+/// Bindings:
+/// - text: The canonical source of truth for the editor’s content. Updated on
+///   every edit.
+/// - language: Determines the parser and token colors applied during highlighting.
 public struct HighlightedEditor: NSViewRepresentable {
 
     @Environment(\.colorScheme) var systemColorScheme
@@ -22,6 +80,32 @@ public struct HighlightedEditor: NSViewRepresentable {
     @Binding public var text: String
     public var language: WebCppLanguage
 
+    /// Creates a syntax-highlighted editor bound to the provided text and configured for a language.
+    ///
+    /// - Parameters:
+    ///   - text: A binding to the editor’s plain-text content. The editor writes all user edits
+    ///           back through this binding and re-highlights on every change.
+    ///   - language: The language used by the WebCpp highlighter to tokenize and colorize the text.
+    ///               Changing this value triggers a re-highlighting pass.
+    ///
+    /// Behavior:
+    /// - Preserves cursor position and undo history by updating only text attributes during highlighting.
+    /// - Adapts to system color scheme changes and re-applies token colors accordingly.
+    /// - Disables smart substitutions to avoid unintended mutations in code (quotes, dashes, etc.).
+    ///
+    /// Usage:
+    /// - Embed in SwiftUI and pass a state or observable property via `text`.
+    /// - Provide a `WebCppLanguage` to select the appropriate syntax rules.
+    ///
+    /// Threading:
+    /// - All highlighting and attribute updates occur on the main thread in coordination with NSTextView.
+    ///
+    /// Performance:
+    /// - Applies a short debounce (~50 ms) to re-highlighting after edits to keep typing responsive.
+    ///
+    /// Requirements:
+    /// - WebCppDriver for tokenization and HTML generation.
+    /// - WebCppTheme to map token classes to colors and font traits.
     public init(text: Binding<String>, language: WebCppLanguage) {
         self._text = text
         self.language = language
@@ -29,6 +113,7 @@ public struct HighlightedEditor: NSViewRepresentable {
 
     // MARK: - NSViewRepresentable
 
+    /// Creates the view object and configures its initial state.
     public func makeNSView(context: Context) -> NSScrollView {
         let scrollView = NSTextView.scrollableTextView()
         guard let textView = scrollView.documentView as? NSTextView else {
@@ -42,6 +127,7 @@ public struct HighlightedEditor: NSViewRepresentable {
         return scrollView
     }
 
+    /// Updates the state of the specified view with new information from SwiftUI.
     public func updateNSView(_ scrollView: NSScrollView, context: Context) {
         guard let textView = scrollView.documentView as? NSTextView else { return }
         let coord = context.coordinator
@@ -65,10 +151,12 @@ public struct HighlightedEditor: NSViewRepresentable {
         }
     }
 
+    /// Creates the custom instance that you use to communicate changes from your view to other parts of your SwiftUI interface.
     public func makeCoordinator() -> Coordinator {
         Coordinator(binding: $text)
     }
 
+    /// Cleans up the presented AppKit view (and coordinator) in anticipation of their removal.
     public static func dismantleNSView(_ scrollView: NSScrollView, coordinator: Coordinator) {
         guard let textView = scrollView.documentView as? NSTextView else { return }
         textView.undoManager?.removeAllActions()
@@ -118,6 +206,53 @@ public struct HighlightedEditor: NSViewRepresentable {
 
     // MARK: - Coordinator
 
+    /// An NSObject-based delegate and controller that coordinates NSTextView editing,
+    /// syntax highlighting, and SwiftUI state synchronization for HighlightedEditor.
+    ///
+    /// Responsibilities:
+    /// - Acts as the NSTextViewDelegate to observe text changes and trigger re-highlighting.
+    /// - Bridges edits from the AppKit text view to the SwiftUI Binding<String>.
+    /// - Manages the currently selected WebCppLanguage and the active ColorScheme to
+    ///   keep highlighting and appearance in sync with user preferences and system changes.
+    /// - Applies WebCpp-driven syntax highlighting by updating only text attributes
+    ///   (foreground color and font) to preserve cursor position and undo history.
+    /// - Debounces frequent edits (≈50 ms) to maintain responsiveness while keeping
+    ///   highlighting up to date.
+    ///
+    /// Lifecycle and usage:
+    /// - Created by HighlightedEditor.makeCoordinator() and retained by SwiftUI.
+    /// - Receives the NSTextView instance in makeNSView and stores a weak reference
+    ///   for later updates.
+    /// - On external content changes (e.g., selecting a different snippet), setContent(_:language:)
+    ///   replaces the text, resets undo history, and reapplies highlighting.
+    /// - On internal edits (user typing), textDidChange(_:) updates the binding and
+    ///   schedules a debounced re-highlight pass.
+    ///
+    /// Scrolling and layout:
+    /// - Captures and restores scroll position across attribute updates to avoid jumpiness
+    ///   when re-highlighting invalidates layout.
+    /// - Forces layout after attribute changes so geometry is correct before restoring
+    ///   the scroll origin.
+    ///
+    /// Threading:
+    /// - All operations occur on the main thread. Debounced work is dispatched to the
+    ///   main queue to remain synchronized with NSTextView updates.
+    ///
+    /// Key properties:
+    /// - binding: The SwiftUI Binding<String> that mirrors the text view’s content.
+    /// - currentLanguage: The active WebCppLanguage that drives tokenization.
+    /// - currentColorScheme: The system color scheme used to select theme colors.
+    /// - textView: A weak reference to the managed NSTextView.
+    /// - debounceItem: A pending DispatchWorkItem used to coalesce rapid edit events.
+    ///
+    /// Related methods:
+    /// - setContent(_:language:): Replaces the entire text and reapplies highlighting,
+    ///   clearing the undo stack to prevent cross-snippet actions.
+    /// - applyHighlighting(to:text:language:): Runs WebCpp, parses token ranges,
+    ///   realigns ranges if necessary, and updates foreground colors and fonts without
+    ///   changing the underlying text content.
+    /// - textDidChange(_:): NSTextViewDelegate callback that updates the binding and
+    ///   debounces a re-highlight pass.
     public final class Coordinator: NSObject, NSTextViewDelegate {
 
         var binding: Binding<String>

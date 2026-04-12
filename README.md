@@ -116,16 +116,16 @@ Note, how we can edit the contents at runtime, and the editor's new value will b
 You may also display a language picker with all of the supported languages, and bind it to a state variable.
 
 ```swift
-@State private var language: WebCppLanguage = .swift
+    @State private var language: WebCppLanguage = .swift
 
-// later in view body ...
+    // later in view body ...
 
-    Picker("Language", selection: $language) {
-        ForEach(WebCppLanguage.allCases) { lang in
-            Text(lang.displayName)
-                .tag(lang)
+        Picker("Language", selection: $language) {
+            ForEach(WebCppLanguage.allCases) { lang in
+                Text(lang.displayName)
+                    .tag(lang)
+            }
         }
-    }
 ```
 
 ## Credits
