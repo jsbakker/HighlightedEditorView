@@ -56,7 +56,7 @@ HighlightedEditorView is a SwiftUI text editing view with real-time syntax highl
 - XML
 - Zig
 
-This project utilizes native code for highlighting. The speed of the syntax highlighting update on edit was measured around 50ms, while other highlighters that use JavaScript parsers might be a bit slower.
+This project utilizes native code for highlighting. The speed of the syntax highlighting update on edit was measured in milliseconds, while other highlighters that use JavaScript parsers might be a bit slower.
 
 
 ## Add HighlightedEditorView Package
