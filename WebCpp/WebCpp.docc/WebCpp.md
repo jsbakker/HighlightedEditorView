@@ -1,10 +1,74 @@
 # ``WebCpp``
 
-<!--@START_MENU_TOKEN@-->Summary<!--@END_MENU_TOKEN@-->
+Webcpp converts source code from various programming languages into HTML with syntax highlighting and colour themes.
 
 ## Overview
+This library is a flat C wrapper to the driver of the command-line tool [Web C Plus Plus (webcpp)](https://github.com/jsbakker/WebCPlusPlus).
 
-<!--@START_MENU_TOKEN@-->Text<!--@END_MENU_TOKEN@-->
+### Supported Languages / Detected Filetypes
+|Language              |Extension(s)|
+|---|---|
+|Ada                   |.adb, .ads, .ali|
+|Assembly              |.asm, .s|
+|Asp                   |.asp, .asa|
+|Basic                 |.bas|
+|C#                    |.cs|
+|C Source              |.c, .rc|
+|C++ Source            |.cc, .cpp, .cxx|
+|C/C++ Header          |.h, .hh, .hpp, .hxx|
+|Cascading StyleSheet  |    .css|
+|DOS Batch             |.bat, .cmd|
+|EMF                   |.emf|
+|Euphoria              |.e, .eu, .ex|
+|F#                    |.fs, .fsi, .fsx|
+|Fortran               |.f, .f77, .f90, .for, .ftn|
+|Gherkin               |.feature|
+|GLSL                  |.glsl, .vert, .frag, .geom, .tesc, .tese, .comp|
+|Go                    |.go|
+|Haskell               |.hs, .lhs|
+|HLSL                  |.hlsl, .hlsli|
+|Java                  |.java|
+|JavaScript            |.js|
+|Kotlin                |.kt, .kts|
+|Markup                |.htm, .html, .shtml, .sgml|
+|Modula2               |.def, .mod|
+|Nasa CLIPS            |.clp|
+|NVidia Cg             |.cg|
+|Objective-C           |.m|
+|Objective-C++         |.mm|
+|OCaml                 |.ml, .mli|
+|Pascal                |.pas|
+|Perl                  |.cgi, .pl, .plx, .plex, .pm|
+|PHP                   |.inc, .php, .php3, .php4|
+|Power Builder         |.pbl, .pbr|
+|Python                |.py, .pyw|
+|R                     |.r|
+|RenderMan             |.rib, .sl|
+|Ruby                  |.rb|
+|Rust                  |.rs|
+|Scala                 |.scala, .sc|
+|SQL                   |.sql|
+|Swift                 |.swift|
+|Tcl                   |.tcl, .tk|
+|TypeScript            |.ts, .tsx|
+|Unix shell            |.sh|
+|UnrealScript          |.uc|
+|Vala                  |.vala, .vapi|
+|VHDL                  |.v, .vhd, .vhdl|
+|XML                   |.xml|
+|Zig                   |.zig|
+
+
+### Options
+The original webcpp executable supported many flags, but only the options below are relevant as a code editor framework.
+```
+  -c=<scheme>        Use a webcpp colour scheme.
+  -t=<width>         Convert tabs to spaces using the specified width.
+  -x=<extension>     Force the filetype for syntax highlighting.
+
+  -s,--snippet-only  Don't generate HTML and BODY tags.
+  -t,--tabs-spaces   Convert tabs to spaces, default width is 8.
+```
 
 ## Topics
 
