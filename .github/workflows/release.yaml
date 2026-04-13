@@ -1,0 +1,75 @@
+# This workflow will archive the project to build the framework and copy it to artifacts
+
+name: Build Framework
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Essential for git tags/history
+
+    - name: Build Documentation
+      run: |
+        xcodebuild docbuild \
+          -scheme HighlightedEditorView \
+          -configuration Release \
+          -destination "platform=macOS" \
+          -derivedDataPath ./docs_build
+
+    - name: Set Dynamic Version Name
+      id: version_logic
+      run: |
+        # Use GITHUB_SHA to get the exact commit that triggered the run
+        # Use shell parameter expansion to get the first 7 characters
+        SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+        
+        # Check for a tag on the triggering SHA
+        TAG=$(git describe --tags --exact-match "${GITHUB_SHA}" 2>/dev/null || echo "")
+        
+        if [ -n "$TAG" ]; then
+          echo "VERSION=$TAG" >> $GITHUB_ENV
+        else
+          echo "VERSION=$SHORT_SHA" >> $GITHUB_ENV
+        fi
+
+    - name: Upload Framework Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: HighlightedEditorView-${{ env.VERSION }}
+        path: ./docs_build/Build/Products/Release/HighlightedEditorView.framework
+        retention-days: 14
+
+    - name: Upload HighlightedEditorView Documentation Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: HighlightedEditorView-Docs-${{ env.VERSION }}
+        path: ./docs_build/Build/Products/Release/HighlightedEditorView.doccarchive
+        retention-days: 14
+
+    - name: Upload WebCpp Documentation Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: WebCpp-Docs-${{ env.VERSION }}
+        path: ./docs_build/Build/Products/Release/WebCpp.doccarchive
+        retention-days: 14
+
+    - name: Upload HighlightedEditorView DSYM Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: HighlightedEditorView-DSYM-${{ env.VERSION }}
+        path: ./docs_build/Build/Products/Release/HighlightedEditorView.framework.DSYM
+        retention-days: 14
+
+    - name: Upload WebCpp DSYM Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: WebCpp-DSYM-${{ env.VERSION }}
+        path: ./docs_build/Build/Products/Release/WebCpp.framework.DSYM
+        retention-days: 14
