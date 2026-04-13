@@ -32,5 +32,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: swift-build
-        path: .build/release/
+        path: .build/debug/
         retention-days: 90
