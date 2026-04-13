@@ -42,6 +42,14 @@ jobs:
           echo "VERSION=$SHORT_SHA" >> $GITHUB_ENV
         fi
 
+    - name: Zip HighlightedEditorView Docs
+      run: |
+        zip -r HighlightedEditorView.doccarchive.zip ./docs_build/Build/Products/Release/HighlightedEditorView.doccarchive
+
+    - name: Zip WebCpp Docs
+      run: |
+        zip -r WebCpp.doccarchive.zip ./docs_build/Build/Products/Release/WebCpp.doccarchive
+
     - name: Upload Framework Artifact
       uses: actions/upload-artifact@v4
       with:
@@ -53,14 +61,14 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: HighlightedEditorView-Docs-${{ env.VERSION }}
-        path: ./docs_build/Build/Products/Release/HighlightedEditorView.doccarchive
+        path: HighlightedEditorView.doccarchive.zip
         retention-days: 14
 
     - name: Upload WebCpp Documentation Artifact
       uses: actions/upload-artifact@v4
       with:
         name: WebCpp-Docs-${{ env.VERSION }}
-        path: ./docs_build/Build/Products/Release/WebCpp.doccarchive
+        path: WebCpp.doccarchive.zip
         retention-days: 14
 
     - name: Upload HighlightedEditorView DSYM Artifact
