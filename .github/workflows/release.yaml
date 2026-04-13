@@ -42,45 +42,14 @@ jobs:
           echo "VERSION=$SHORT_SHA" >> $GITHUB_ENV
         fi
 
-    - name: Zip HighlightedEditorView Docs
+    - name: Zip HighlightedEditorView Files
       run: |
-        zip -r HighlightedEditorView.doccarchive.zip ./docs_build/Build/Products/Release/HighlightedEditorView.doccarchive
+        cd ./docs_build/Build/Products/Release
+        zip -ry HighlightedEditorView-${{ env.VERSION }}.zip ./
 
-    - name: Zip WebCpp Docs
-      run: |
-        zip -r WebCpp.doccarchive.zip ./docs_build/Build/Products/Release/WebCpp.doccarchive
-
-    - name: Upload Framework Artifact
+    - name: Upload HighlightedEditorView Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: HighlightedEditorView-${{ env.VERSION }}
-        path: ./docs_build/Build/Products/Release/HighlightedEditorView.framework
-        retention-days: 14
-
-    - name: Upload HighlightedEditorView Documentation Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: HighlightedEditorView-Docs-${{ env.VERSION }}
-        path: HighlightedEditorView.doccarchive.zip
-        retention-days: 14
-
-    - name: Upload WebCpp Documentation Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: WebCpp-Docs-${{ env.VERSION }}
-        path: WebCpp.doccarchive.zip
-        retention-days: 14
-
-    - name: Upload HighlightedEditorView DSYM Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: HighlightedEditorView-DSYM-${{ env.VERSION }}
-        path: ./docs_build/Build/Products/Release/HighlightedEditorView.framework.DSYM
-        retention-days: 14
-
-    - name: Upload WebCpp DSYM Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: WebCpp-DSYM-${{ env.VERSION }}
-        path: ./docs_build/Build/Products/Release/WebCpp.framework.DSYM
+        name: HighlightedEditorView-Release-${{ env.VERSION }}
+        path: ./docs_build/Build/Products/Release/HighlightedEditorView-${{ env.VERSION }}.zip
         retention-days: 14
