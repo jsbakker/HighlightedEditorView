@@ -5,7 +5,7 @@
 [![Swift](https://github.com/jsbakker/HighlightedEditorView/actions/workflows/swift.yml/badge.svg)](https://github.com/jsbakker/HighlightedEditorView/actions/workflows/swift.yml)
 
 # HighlightedEditorView
-HighlightedEditorView is a SwiftUI text editing view with real-time syntax highlighting. The syntax highlighting supports 48 computer languages:
+HighlightedEditorView is a reusable macOS framework containing a SwiftUI text editing view with real-time syntax highlighting. The syntax highlighting supports 48 computer languages:
 
 - Ada
 - Assembly
