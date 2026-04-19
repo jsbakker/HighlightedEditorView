@@ -253,6 +253,7 @@ public struct HighlightedEditor: NSViewRepresentable {
     ///   changing the underlying text content.
     /// - textDidChange(_:): NSTextViewDelegate callback that updates the binding and
     ///   debounces a re-highlight pass.
+    @MainActor
     public final class Coordinator: NSObject, NSTextViewDelegate {
 
         var binding: Binding<String>
