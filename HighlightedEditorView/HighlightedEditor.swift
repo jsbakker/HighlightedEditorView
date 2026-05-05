@@ -79,6 +79,7 @@ public struct HighlightedEditor: NSViewRepresentable {
 
     @Binding public var text: String
     public var language: WebCppLanguage
+    public var showLineNumbers: Bool = false
 
     /// Creates a syntax-highlighted editor bound to the provided text and configured for a language.
     ///
@@ -96,6 +97,7 @@ public struct HighlightedEditor: NSViewRepresentable {
     /// Usage:
     /// - Embed in SwiftUI and pass a state or observable property via `text`.
     /// - Provide a `WebCppLanguage` to select the appropriate syntax rules.
+    /// - Chain `.showLineNumbers()` to enable the line-number gutter.
     ///
     /// Threading:
     /// - All highlighting and attribute updates occur on the main thread in coordination with NSTextView.
@@ -111,26 +113,81 @@ public struct HighlightedEditor: NSViewRepresentable {
         self.language = language
     }
 
+    /// Enables or disables the line-number gutter.
+    ///
+    /// The gutter is rendered in the scroll view’s ruler area — it is not part of the
+    /// text view, so line numbers are never included in the `text` binding and cannot
+    /// be selected or edited by the user.
+    ///
+    /// Usage:
+    ///   HighlightedEditor(text: $code, language: .swift)
+    ///       .showLineNumbers()         // enable
+    ///       .showLineNumbers(false)    // disable
+    public func showLineNumbers(_ show: Bool = true) -> HighlightedEditor {
+        var copy = self
+        copy.showLineNumbers = show
+        return copy
+    }
+
+    // MARK: - Container view
+
+    /// A plain NSView that positions the gutter (if present) and the scroll view side by side.
+    /// Uses `resizeSubviews` rather than autoresizing masks so the layout is always correct
+    /// regardless of when SwiftUI delivers a non-zero bounds to the container.
+    private final class EditorContainerView: NSView {
+        var lineNumberView: LineNumberView?
+        var scrollView: NSScrollView?
+
+        override func resizeSubviews(withOldSize _: NSSize) {
+            let w  = bounds.width
+            let h  = bounds.height
+            let gw = lineNumberView != nil ? LineNumberView.gutterWidth : 0
+            lineNumberView?.frame = NSRect(x: 0,  y: 0, width: gw,      height: h)
+            scrollView?.frame     = NSRect(x: gw, y: 0, width: w - gw,  height: h)
+        }
+    }
+
     // MARK: - NSViewRepresentable
 
     /// Creates the view object and configures its initial state.
-    public func makeNSView(context: Context) -> NSScrollView {
+    public func makeNSView(context: Context) -> NSView {
+        let container  = EditorContainerView()
         let scrollView = NSTextView.scrollableTextView()
         guard let textView = scrollView.documentView as? NSTextView else {
-            return scrollView
+            scrollView.autoresizingMask = [.width, .height]
+            container.addSubview(scrollView)
+            return container
         }
 
         configureTextView(textView, coordinator: context.coordinator)
-        context.coordinator.textView = textView
-        context.coordinator.currentColorScheme = systemColorScheme
-        context.coordinator.setContent(text, language: language)
-        return scrollView
+
+        let coord = context.coordinator
+        coord.textView            = textView
+        coord.scrollView          = scrollView
+        coord.currentColorScheme  = systemColorScheme
+        coord.showLineNumbers     = showLineNumbers
+
+        container.scrollView      = scrollView
+        container.addSubview(scrollView)
+
+        if showLineNumbers {
+            let lnv = LineNumberView(textView: textView)
+            container.lineNumberView = lnv
+            container.addSubview(lnv)
+            lnv.startObservingScroll(in: scrollView)
+            coord.lineNumberView = lnv
+        }
+
+        coord.setContent(text, language: language)
+        return container
     }
 
     /// Updates the state of the specified view with new information from SwiftUI.
-    public func updateNSView(_ scrollView: NSScrollView, context: Context) {
-        guard let textView = scrollView.documentView as? NSTextView else { return }
+    public func updateNSView(_ nsView: NSView, context: Context) {
         let coord = context.coordinator
+        guard let container  = nsView as? EditorContainerView,
+              let scrollView = coord.scrollView,
+              let textView   = coord.textView else { return }
 
         // Always refresh the binding so the coordinator writes to the current snippet.
         coord.binding = $text
@@ -145,10 +202,30 @@ public struct HighlightedEditor: NSViewRepresentable {
         } else if coord.currentColorScheme != systemColorScheme {
             // Color scheme changed: update background and re-apply token colors.
             coord.currentColorScheme = systemColorScheme
-            textView.backgroundColor    = WebCppTheme.backgroundColor
+            textView.backgroundColor     = WebCppTheme.backgroundColor
             textView.insertionPointColor = WebCppTheme.color(for: "nortext")
             coord.applyHighlighting(to: textView, text: text, language: language)
         }
+
+        // Handle showLineNumbers toggle.
+        if coord.showLineNumbers != showLineNumbers {
+            coord.showLineNumbers = showLineNumbers
+
+            if showLineNumbers {
+                let lnv = LineNumberView(textView: textView)
+                container.lineNumberView = lnv
+                container.addSubview(lnv)
+                lnv.startObservingScroll(in: scrollView)
+                coord.lineNumberView = lnv
+            } else {
+                coord.lineNumberView?.removeFromSuperview()
+                coord.lineNumberView = nil
+                container.lineNumberView = nil
+            }
+            container.resizeSubviews(withOldSize: container.bounds.size)
+        }
+
+        coord.lineNumberView?.needsDisplay = true
     }
 
     /// Creates the custom instance that you use to communicate changes from your view to other parts of your SwiftUI interface.
@@ -157,9 +234,8 @@ public struct HighlightedEditor: NSViewRepresentable {
     }
 
     /// Cleans up the presented AppKit view (and coordinator) in anticipation of their removal.
-    public static func dismantleNSView(_ scrollView: NSScrollView, coordinator: Coordinator) {
-        guard let textView = scrollView.documentView as? NSTextView else { return }
-        textView.undoManager?.removeAllActions()
+    public static func dismantleNSView(_ containerView: NSView, coordinator: Coordinator) {
+        coordinator.textView?.undoManager?.removeAllActions()
     }
 
     // MARK: - Private setup
@@ -259,7 +335,10 @@ public struct HighlightedEditor: NSViewRepresentable {
         var binding: Binding<String>
         var currentLanguage: WebCppLanguage = .swift
         var currentColorScheme: ColorScheme = .light
+        var showLineNumbers: Bool = false
         weak var textView: NSTextView?
+        weak var scrollView: NSScrollView?
+        weak var lineNumberView: LineNumberView?
         private var debounceItem: DispatchWorkItem?
 
         init(binding: Binding<String>) {
@@ -284,6 +363,7 @@ public struct HighlightedEditor: NSViewRepresentable {
             ]
 
             applyHighlighting(to: textView, text: text, language: language)
+            lineNumberView?.needsDisplay = true
         }
 
         /// Applies WebCpp syntax highlighting attributes to the text storage
@@ -352,6 +432,8 @@ public struct HighlightedEditor: NSViewRepresentable {
                 scrollView.contentView.setBoundsOrigin(clampedOrigin)
                 scrollView.reflectScrolledClipView(scrollView.contentView)
             }
+
+            lineNumberView?.needsDisplay = true
         }
 
         // MARK: NSTextViewDelegate
