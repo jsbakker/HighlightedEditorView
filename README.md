@@ -122,6 +122,17 @@ struct ContentView: View {
 
 Note, how we can edit the contents at runtime, and the editor's new value will be updated by the binding's setter.
 
+## Show Line Numbers
+To show a line number margin, you can call `.showLineNumbers()` in the SwiftUI. E.g.:
+```swift
+    HighlightedEditor(
+        text: Binding(
+            get: { sampleMultilineText },
+            set: { sampleMultilineText = $0 }
+        ), language: $language.wrappedValue)
+    .showLineNumbers()
+```
+
 ## Choose Supported Language
 You may also display a language picker with all of the supported languages, and bind it to a state variable.
 
