@@ -5,7 +5,7 @@
 [![Swift](https://github.com/jsbakker/HighlightedEditorView/actions/workflows/swift.yml/badge.svg)](https://github.com/jsbakker/HighlightedEditorView/actions/workflows/swift.yml)
 
 # HighlightedEditorView
-HighlightedEditorView is a reusable macOS framework containing a SwiftUI text editing view with real-time syntax highlighting. The syntax highlighting supports 58 computer languages:
+HighlightedEditorView is a reusable macOS framework containing a SwiftUI text editing view with real-time syntax highlighting. The syntax highlighting supports 61 computer languages:
 
 - Ada
 - Assembly
@@ -33,6 +33,7 @@ HighlightedEditorView is a reusable macOS framework containing a SwiftUI text ed
 - HTML
 - Java
 - JavaScript
+- JSON
 - Julia
 - Kotlin
 - Lua
@@ -57,6 +58,7 @@ HighlightedEditorView is a reusable macOS framework containing a SwiftUI text ed
 - SQL
 - Swift
 - Tcl
+- TOML
 - TypeScript
 - Unix shell
 - UnrealScript
@@ -64,6 +66,7 @@ HighlightedEditorView is a reusable macOS framework containing a SwiftUI text ed
 - VHDL
 - WGSL
 - XML
+- YAML
 - Zig
 
 This project utilizes native code for highlighting. The speed of the syntax highlighting update on edit was measured in milliseconds, while other highlighters that use JavaScript parsers might be a bit slower.
