@@ -13,18 +13,18 @@ LangToml::LangToml() {
 
     initReservedWords();
 
-    doStringsSinQuote           = true;
+    doStringsDblQuote           = true;
+    doStringsSinQuote           = true;   // literal strings: '…'
+    doMultilineStrTripleDblQuote = true;  // multi-line basic strings: """…"""
+    doNumbers                   = true;
+    doUnderscoreNumbers         = true;   // 1_000_000
     doSymbols                   = true;
-    doUnderscoreNumbers         = true;
-    doMultilineStrTripleDblQuote = true;  // """…"""
-    doInlineCommentHash          = true;   // #
+    doInlineCommentHash         = true;   // #
 }
 
 void LangToml::initReservedWords() {
 
-    // TOML boolean literals
-    string K[] = {
-        "false", "true",
-    };
+    // TOML boolean literals and special float values
+    string K[] = { "false", "inf", "nan", "true" };
     std::copy(std::cbegin(K), std::cend(K), std::back_inserter(keys));
 }

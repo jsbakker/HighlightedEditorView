@@ -13,25 +13,17 @@ LangYaml::LangYaml() {
 
     initReservedWords();
 
-    doStringsSinQuote    = true;
-    doSymbols            = true;
-    doInlineCommentHash  = true;  // #
+    doCaseKeys          = false;  // YAML booleans are case-insensitive
+    doStringsDblQuote   = true;
+    doStringsSinQuote   = true;
+    doNumbers           = true;
+    doSymbols           = true;
+    doInlineCommentHash = true;   // #
 }
 
 void LangYaml::initReservedWords() {
 
-    // YAML boolean and null scalars (all case variants per the YAML 1.2 core schema)
-    string K[] = {
-        "false", "null", "true",
-    };
+    // YAML 1.1/1.2 boolean and null literals (matched case-insensitively)
+    string K[] = { "false", "no", "null", "off", "on", "true", "yes" };
     std::copy(std::cbegin(K), std::cend(K), std::back_inserter(keys));
-
-    // YAML 1.1 legacy boolean aliases still widely used by parsers
-    string T[] = {
-        "False", "No", "NULL", "Null", "OFF", "ON", "Off",
-        "On", "TRUE", "True", "TRUE", "YES", "Yes",
-        "no", "off", "on", "yes",
-        "FALSE", "NO",
-    };
-    std::copy(std::cbegin(T), std::cend(T), std::back_inserter(types));
 }

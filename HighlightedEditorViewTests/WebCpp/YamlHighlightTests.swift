@@ -17,10 +17,10 @@ final class YamlHighlightTests: XCTestCase {
     func testLegacyBooleanAliases() {
         let html = HighlightTestHelper.highlight("a: yes\nb: no\nc: on\nd: off",
                                                   language: "yaml")
-        XCTAssertTrue(html.contains("<font CLASS=keytype>yes</font>"))
-        XCTAssertTrue(html.contains("<font CLASS=keytype>no</font>"))
-        XCTAssertTrue(html.contains("<font CLASS=keytype>on</font>"))
-        XCTAssertTrue(html.contains("<font CLASS=keytype>off</font>"))
+        XCTAssertTrue(html.contains("<font CLASS=keyword>yes</font>"))
+        XCTAssertTrue(html.contains("<font CLASS=keyword>no</font>"))
+        XCTAssertTrue(html.contains("<font CLASS=keyword>on</font>"))
+        XCTAssertTrue(html.contains("<font CLASS=keyword>off</font>"))
     }
 
     func testDoubleQuoteString() {

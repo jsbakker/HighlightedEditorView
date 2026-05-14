@@ -12,13 +12,16 @@ using std::string;
 LangJson::LangJson() {
 
     initReservedWords();
+
+    doStringsDblQuote       = true;
+    doNumbers               = true;
+    doSymbols               = true;
+    doInlineCommentDblSlash = true;  // JSONC / JSON5: //
+    doBlockCommentPLI       = true;  // JSONC / JSON5: /* … */
 }
 
 void LangJson::initReservedWords() {
 
-    // JSON literal values
-    string K[] = {
-        "false", "null", "true",
-    };
+    string K[] = { "false", "null", "true" };
     std::copy(std::cbegin(K), std::cend(K), std::back_inserter(keys));
 }
