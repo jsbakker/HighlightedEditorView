@@ -144,6 +144,7 @@ public struct HighlightedEditor: NSViewRepresentable {
             let gw = lineNumberView != nil ? LineNumberView.gutterWidth : 0
             lineNumberView?.frame = NSRect(x: 0,  y: 0, width: gw,      height: h)
             scrollView?.frame     = NSRect(x: gw, y: 0, width: w - gw,  height: h)
+            lineNumberView?.needsDisplay = true
         }
     }
 
