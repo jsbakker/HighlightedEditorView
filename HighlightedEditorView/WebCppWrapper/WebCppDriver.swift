@@ -1,31 +1,26 @@
 //
 //  WebCppDriver.swift
-//  ReSwifter
+//  HighlightedEditorView
 //
-//  Swift wrapper around the WebCpp framework's C bridge.
+//  Swift wrapper around the WebCpp C++ Driver class via Swift/C++ interop.
 //
 
-import Foundation
-import WebCpp
+internal import WebCpp
 
 /// Swift-friendly wrapper around the WebCpp syntax-highlighting engine.
 final class WebCppDriver {
 
-    private let ref: WebCppDriverRef
+    private let driver: Driver
 
     init() {
-        ref = webcpp_driver_create()
-    }
-
-    deinit {
-        webcpp_driver_destroy(ref)
+        driver = Driver()
     }
 
     // MARK: - Static
 
     /// Generates an index HTML file from a webcppbatch.txt listing.
     static func makeIndex(prefix: String = "") {
-        webcpp_driver_make_index(prefix)
+        Driver.makeIndex(std.string(prefix))
     }
 
     // MARK: - Instance
@@ -34,47 +29,36 @@ final class WebCppDriver {
     /// - Returns: `true` if the option was recognised and applied.
     @discardableResult
     func parseSwitch(_ arg: String) -> Bool {
-        webcpp_driver_switch_parser(ref, arg)
+        driver.switch_parser(std.string(arg))
     }
 
     /// Returns the internal language file-type code for the given filename.
-    func getExtension(for filename: String) -> CChar {
-        webcpp_driver_get_ext(ref, filename)
+    func getExtension(for filename: String) -> UInt8 {
+        driver.getExt(std.string(filename))
     }
 
     /// Detects the language for the given filename and returns a human-readable description
     /// (e.g. `"C++ file"`, `"Python script"`).
     func checkExtension(for filename: String) -> String {
-        guard let cStr = webcpp_driver_check_ext(ref, filename) else { return "" }
-        let result = String(cString: cStr)
-        webcpp_free_string(cStr)
-        return result
+        String(driver.checkExt(std.string(filename)))
     }
 
     /// Prepares input/output files for processing.
-    /// - Parameters:
-    ///   - inputFile: Path to the source file.
-    ///   - outputFile: Path for the HTML output.
-    ///   - overwrite: Overwrite behaviour — `.force`, `.never`, or `.prompt`.
-    /// - Returns: `true` on success.
     @discardableResult
     func prepareFiles(input inputFile: String,
                       output outputFile: String,
                       overwrite: OverwriteMode = .force) -> Bool {
-        webcpp_driver_prep_files(ref, inputFile, outputFile, overwrite.rawValue)
+        driver.prep_files(std.string(inputFile), std.string(outputFile), overwrite.rawValue)
     }
 
     /// Returns the filename portion (without directory path) of the current input file.
     func getTitle() -> String {
-        guard let cStr = webcpp_driver_get_title(ref) else { return "" }
-        let result = String(cString: cStr)
-        webcpp_free_string(cStr)
-        return result
+        String(driver.getTitle())
     }
 
     /// Runs the syntax-highlighting engine on the prepared files.
     func drive() {
-        webcpp_driver_drive(ref)
+        driver.drive()
     }
 
     // MARK: - Convenience
@@ -88,39 +72,14 @@ final class WebCppDriver {
     static func highlightString(_ source: String,
                                 filename: String,
                                 options: [String] = []) -> String? {
-        // Build a null-terminated C array of option strings
-        var cOptions = options.map { strdup($0) as UnsafeMutablePointer<CChar>? }
-        cOptions.append(nil)
-
-        let result: String? = cOptions.withUnsafeMutableBufferPointer { buf in
-            // Reinterpret [UnsafeMutablePointer<CChar>?] as [UnsafePointer<CChar>?]
-            buf.baseAddress!.withMemoryRebound(
-                to: UnsafePointer<CChar>?.self,
-                capacity: buf.count
-            ) { ptr in
-                guard let cStr = webcpp_driver_highlight_string(source, filename, ptr) else {
-                    return nil
-                }
-                let s = String(cString: cStr)
-                webcpp_free_string(cStr)
-                return s
-            }
-        }
-
-        // Free the strdup'd option strings
-        for ptr in cOptions {
-            free(ptr)
-        }
-
-        return result
+        var opts = WebCppStringVector()
+        for opt in options { opts.push_back(std.string(opt)) }
+        let d = Driver()
+        let result = String(d.highlight_from_string(std.string(source), std.string(filename), opts))
+        return result.isEmpty ? nil : result
     }
 
     // MARK: - Supporting Types
-
-    enum HelpMode: CChar {
-        case languages = 0x4C  // 'L'
-        case `default` = 0x44  // 'D'
-    }
 
     enum OverwriteMode: CChar {
         case force  = 0x66  // 'f'

@@ -1,4 +1,5 @@
 framework module WebCpp {
-    header "WebCppBridge.h"
+    requires cplusplus
+    header "../driver.h"
     export *
 }
