@@ -80,6 +80,13 @@ Enter:
 
 in the Package URL / Search field. Select the version you want and the project you want to add it to, and click Add Package. It should automatically be linked against from the default target of the project.
 
+### Xcode Project Settings
+Recent changes have removed a C wrapper to allow Swift interop with C++ directly (the syntax highlighting engine is written in C++).
+
+In Xcode's UI for any project target that links against HighlightedEditorView:
+
+Build Settings → Swift Compiler - Language → C++ and Swift Interoperability → set to "C++".
+
 
 ## Using HighlightedEditor in SwiftUI
 To use the syntax highlighted editor in your SwiftUI application, import `HighlightedEditorView`, and use `HighlightedEditor` in your content view.

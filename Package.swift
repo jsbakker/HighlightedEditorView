@@ -31,10 +31,12 @@ let package = Package(
         .target(
             name: "HighlightedEditorView",
             dependencies: ["WebCpp"],
-            path: "HighlightedEditorView"),
+            path: "HighlightedEditorView",
+            swiftSettings: [.interoperabilityMode(.Cxx)]),
         .testTarget(
             name: "HighlightedEditorViewTests",
             dependencies: ["HighlightedEditorView"],
-            path: "HighlightedEditorViewTests"),
+            path: "HighlightedEditorViewTests",
+            swiftSettings: [.interoperabilityMode(.Cxx)]),
     ]
 )
